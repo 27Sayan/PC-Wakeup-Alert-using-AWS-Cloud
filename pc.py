@@ -1,18 +1,21 @@
 import keyboard
 import boto3
-import sys
 import json
 import requests
+import sys
 
 # AWS Lambda function configuration
-lambda_function_name = 'your_function_name' 
-region_name = 'your_region_name'  
+lambda_function_name = 'your_function-name' 
+region_name = 'your_region_name'   
 
 # API Gateway endpoint URL
 api_gateway_url = 'your_api_url'
 
 # Configure AWS Lambda client
 lambda_client = boto3.client('lambda', region_name=region_name)
+
+# Variable to track whether the first key event has been processed
+key_processed = False
 
 def invoke_lambda_function(payload):
     try:
@@ -33,7 +36,9 @@ def send_to_api(payload):
         print('Error sending POST request to API Gateway:', str(e))
 
 def on_key_event(event):
-    if event.event_type == keyboard.KEY_DOWN:
+    global key_processed
+    
+    if event.event_type == keyboard.KEY_DOWN and not key_processed:
         print(f'Key {event.name} was pressed')
         
         # Create JSON payload
@@ -42,16 +47,17 @@ def on_key_event(event):
                 "pcName": event.name
             }
         }
-        
         # Trigger the Lambda function when a key is pressed
         invoke_lambda_function(payload)
 
         # Send the payload to API Gateway
         send_to_api(payload)
 
-        # Unhook the keyboard and exit the script
+        # Mark that the key event has been processed
+        key_processed = True
+        
+        # Unhook the keyboard event handler to stop further events
         keyboard.unhook_all()
-        sys.exit()
 
 # Hook the keyboard event handler
 keyboard.hook(on_key_event)
@@ -62,3 +68,4 @@ try:
 
 except KeyboardInterrupt:
     print('Keyboard event handling stopped.')
+    keyboard.unhook_all()
