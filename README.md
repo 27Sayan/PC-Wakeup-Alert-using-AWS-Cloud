@@ -15,3 +15,7 @@ To setup this project, you will initially need an AWS account and then follow th
 8.  Make the necessary changes in awslambda.py and pc.py 
 9. Now, put the code of awslambda.py to the code section of the AWS lambda and deploy the changes.
 10. Now, you can run the pc.py and you will recieve an email from AWS.
+11. To make it send emails whenever to turn on the pc, you have to create a VBscript file with the given content.
+12. Press 🪟+r and then type "shell:startup" and press enter.
+13. Paste the VBscript file over here and restart your pc while the aws lambda, sns, ses, api gateway are running.
+14. You will get two notifications, one from ses that your pc has been activated and the other from sns stating all the details of sending the notification.
